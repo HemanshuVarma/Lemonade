@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.varma.hemanshu.compose.lemonade.model.LemonadeResources
 import com.varma.hemanshu.compose.lemonade.ui.theme.LemonadeTheme
 
 class MainActivity : ComponentActivity() {
@@ -52,27 +53,31 @@ fun LemonadeApp(
         var tapCount = 1
         val TAG = "Lemonade Counter"
 
-        val textResource = when (step) {
-            1 -> R.string.lemon_tree
-            2 -> R.string.lemon
-            3 -> R.string.drink_lemonade
-            else -> R.string.empty_glass
-        }
-        val imageResource = when (step) {
-            1 -> R.drawable.lemon_tree
-            2 -> R.drawable.lemon_squeeze
-            3 -> R.drawable.lemon_drink
-            else -> R.drawable.lemon_restart
-        }
-        val imageDescResource = when (step) {
-            1 -> R.string.lemon_tree_desc
-            2 -> R.string.lemon_desc
-            3 -> R.string.lemonade_glass_desc
-            else -> R.string.empty_glass_desc
+        val res: LemonadeResources = when (step) {
+            1 -> LemonadeResources(
+                textResource = R.string.lemon_tree,
+                imageResource = R.drawable.lemon_tree,
+                imageDescResource = R.string.lemon_tree_desc
+            )
+            2 -> LemonadeResources(
+                textResource = R.string.lemon,
+                imageResource = R.drawable.lemon_squeeze,
+                imageDescResource = R.string.lemon_desc
+            )
+            3 -> LemonadeResources(
+                textResource = R.string.drink_lemonade,
+                imageResource = R.drawable.lemon_drink,
+                imageDescResource = R.string.lemonade_glass_desc
+            )
+            else -> LemonadeResources(
+                textResource = R.string.empty_glass,
+                imageResource = R.drawable.lemon_restart,
+                imageDescResource = R.string.empty_glass_desc
+            )
         }
 
         Text(
-            text = stringResource(id = textResource), fontSize = 18.sp
+            text = stringResource(id = res.textResource), fontSize = 18.sp
         )
         Spacer(
             modifier = Modifier.height(16.dp)
@@ -105,9 +110,9 @@ fun LemonadeApp(
                 }
             }
             .padding(all = 16.dp),
-            painter = painterResource(id = imageResource),
+            painter = painterResource(id = res.imageResource),
             contentDescription = stringResource(
-                id = imageDescResource
+                id = res.imageDescResource
             ))
     }
 }
