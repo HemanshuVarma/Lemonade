@@ -2,6 +2,7 @@ package com.varma.hemanshu.compose.lemonade
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -36,8 +37,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LemonadeApp(
-    modifier: Modifier = Modifier
-        .fillMaxSize()
+    modifier: Modifier = Modifier.fillMaxSize()
 ) {
     Column(
         modifier = modifier,
@@ -46,6 +46,12 @@ fun LemonadeApp(
     ) {
         // Counter variable for holding current STEP of making lemonade.
         var step by remember { mutableStateOf(1) }
+
+        // No. of taps required to squeeze a lemon
+        val tapsRequired = (2..4).random()
+        var tapCount = 1
+        val TAG = "Lemonade Counter"
+
         val textResource = when (step) {
             1 -> R.string.lemon_tree
             2 -> R.string.lemon
@@ -58,35 +64,51 @@ fun LemonadeApp(
             3 -> R.drawable.lemon_drink
             else -> R.drawable.lemon_restart
         }
+        val imageDescResource = when (step) {
+            1 -> R.string.lemon_tree_desc
+            2 -> R.string.lemon_desc
+            3 -> R.string.lemonade_glass_desc
+            else -> R.string.empty_glass_desc
+        }
+
         Text(
-            text = stringResource(id = textResource),
-            fontSize = 18.sp
+            text = stringResource(id = textResource), fontSize = 18.sp
         )
         Spacer(
             modifier = Modifier.height(16.dp)
         )
-        Image(
-            modifier = Modifier
-                .border(
-                    border = BorderStroke(
-                        width = 2.dp,
-                        color = Color(105, 205, 216, 255)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .clickable {
-                    step = when (step) {
-                        // Incrementing count of STEP until 3. Resetting to 1 in other case
-                        1, 2, 3 -> step + 1
-                        else -> 1
+        Image(modifier = Modifier
+            .border(
+                border = BorderStroke(
+                    width = 2.dp, color = Color(105, 205, 216, 255)
+                ), shape = RoundedCornerShape(8.dp)
+            )
+            .clickable {
+                Log.d(TAG, "STEP: $step")
+                step = when (step) {
+                    // Incrementing count of STEP until 3. Resetting to 1 in other case
+                    1, 3 -> step + 1
+                    2 -> {
+                        Log.d(TAG, "TAPS REQUIRED: $tapsRequired")
+                        Log.d(TAG, "COUNT: $tapCount")
+                        if (tapCount <= tapsRequired) {
+                            tapCount++
+                            step
+                        } else {
+                            step + 1
+                        }
+                    }
+                    else -> {
+                        tapCount = 0
+                        1
                     }
                 }
-                .padding(all = 16.dp),
+            }
+            .padding(all = 16.dp),
             painter = painterResource(id = imageResource),
             contentDescription = stringResource(
-                id = R.string.lemon_tree_desc
-            )
-        )
+                id = imageDescResource
+            ))
     }
 }
 
@@ -99,8 +121,7 @@ fun DefaultPreview() {
 }
 
 @Preview(
-    showBackground = true, showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
+    showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
 fun DefaultPreviewDarkTheme() {
